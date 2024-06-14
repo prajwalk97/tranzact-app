@@ -46,8 +46,8 @@ enum AuthType {
   Github
 }
 
-enum OnRampStatus{
-  pending
-  completed
-  failed
+enum OnRampStatus {
+  Success
+  Failure
+  Processing
 }
