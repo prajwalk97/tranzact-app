@@ -38,7 +38,7 @@ model OnRampTransaction {
   provider String
   amount Int
   startTime DateTime
-  userId Int @unique
+  userId Int
   user User @relation(fields: [userId], references: [id])
 }
 enum AuthType {

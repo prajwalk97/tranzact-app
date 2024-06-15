@@ -4,8 +4,9 @@ import prisma from "@repo/db/client";
 const app = express();
 
 app.use(express.json())
-app.post("/hdfcWebhook", (req, res) => {
+app.post("/hdfcWebhook", async (req, res) => {
     //TODO: Add zod validation here?
+    console.log("deb", req.body);
     const paymentInformation: {
         token: string;
         userId: string;
@@ -20,11 +21,11 @@ app.post("/hdfcWebhook", (req, res) => {
         await db.$transaction([
             prisma.balance.updateMany({
                 where: {
-                    userId: parseInt(paymentInformation.userId),
+                    userId: Number(paymentInformation.userId),
                 },
                 data: {
                     amount: {
-                        increment: req.body.amount
+                        increment: Number(req.body.amount)
                     }
                 }
             }),
@@ -33,10 +34,19 @@ app.post("/hdfcWebhook", (req, res) => {
                     token: paymentInformation.token,
                 },
                 data: {
-                    status: "completed",
+                    status: "Success",
                 }
             }),
         ])
+    } catch (e) {
+        console.log(e);
     }
+
+    res.json({
+        message: "captured"
+    });
     // Update balance in db, add txn
 })
+
+
+app.listen(8000);
