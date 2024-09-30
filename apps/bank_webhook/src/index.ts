@@ -4,7 +4,7 @@ import prisma from "@repo/db/client";
 const app = express();
 
 app.use(express.json())
-app.post("/hdfcWebhook", async (req, res) => {
+app.post("/webhook", async (req, res) => {
     //TODO: Add zod validation here?
     console.log("deb", req.body);
     const paymentInformation: {

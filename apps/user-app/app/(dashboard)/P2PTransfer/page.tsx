@@ -1,9 +1,9 @@
 import prisma from "@repo/db/client";
 import { P2PCard } from "../../components/P2Pcard";
 import { BalanceCard } from "../../components/BalanceCard";
-import { OnRampTransactions } from "../../components/OnRampTransactions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../lib/auth";
+import { P2PTransactions } from "../../components/P2Ptransactions";
 
 async function getBalance() {
     const session = await getServerSession(authOptions);
@@ -18,24 +18,27 @@ async function getBalance() {
     }
 }
 
-async function getOnRampTransactions() {
+async function getP2PTransactions() {
     const session = await getServerSession(authOptions);
-    const txns = await prisma.onRampTransaction.findMany({
+    const txns = await prisma.p2pTransfer.findMany({
         where: {
-            userId: Number(session?.user?.id)
+            OR: [
+                { fromUserId: Number(session?.user?.id) },
+                { toUserId: Number(session?.user?.id) }
+            ],
         }
     });
     return txns.map(t => ({
-        time: t.startTime,
+        time: t.timestamp,
         amount: t.amount,
-        status: t.status,
-        provider: t.provider
+        fromUserId: t.fromUserId,
+        toUserId: t.toUserId
     }))
 }
 
 export default async function () {
     const balance = await getBalance();
-    const transactions = await getOnRampTransactions();
+    const transactions = await getP2PTransactions();
 
     return <div className="w-screen">
         <div className="text-4xl text-[#6a51a6] pt-8 mb-8 font-bold">
@@ -48,7 +51,7 @@ export default async function () {
             <div>
                 <BalanceCard amount={balance.amount} locked={balance.locked} />
                 <div className="pt-4">
-                    <OnRampTransactions transactions={transactions} />
+                    <P2PTransactions transactions={transactions} />
                 </div>
             </div>
         </div>

@@ -16,10 +16,9 @@ export async function createP2PTransaction(to: string, amount: number) {
             number: to
         }
     });
-
     if (!toUser) {
         return {
-            message: "User not found"
+            message: `${to} User not found`,
         }
     }
     await prisma.$transaction(async (tx) => {
@@ -40,5 +39,16 @@ export async function createP2PTransaction(to: string, amount: number) {
             where: { userId: toUser.id },
             data: { amount: { increment: amount } },
         });
+        await tx.p2pTransfer.create({
+            data: {
+                fromUserId: Number(from),
+                toUserId: toUser?.id,
+                amount: amount,
+                timestamp: new Date(),
+            }
+        })
     });
+    return {
+        message: `Done! transferred to ${to}`
+    }
 }
