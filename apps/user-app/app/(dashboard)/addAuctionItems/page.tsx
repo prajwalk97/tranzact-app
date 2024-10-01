@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect } from "react";
+import { AddAuctionItems } from "../../components/AddAuctionItems";
 
 export default async function () {
     useEffect(() => {
-        const x = async () => {
+        const x: any = async () => {
             try {
                 const response = await fetch(`/api/bids`);
                 const res = await response.json();
@@ -18,7 +19,5 @@ export default async function () {
 
     }, [])
     // console.log(response.json());
-    return <div>
-        Dashboard Page (or transfer/txn page)
-    </div>
+    return <AddAuctionItems />
 }
